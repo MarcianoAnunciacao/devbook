@@ -7,7 +7,7 @@ import (
 )
 
 // It should returns a configured router
-func Gerar() *mux.Router {
+func Generate() *mux.Router {
 	r := mux.NewRouter()
 	return routes.Config(r)
 }

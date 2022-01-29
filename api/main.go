@@ -1,6 +1,7 @@
 package main
 
 import (
+	"api/src/config"
 	"api/src/router"
 	"fmt"
 	"log"
@@ -8,9 +9,12 @@ import (
 )
 
 func main() {
-	fmt.Println("Rodando a API")
+	config.LoadVariables()
+	fmt.Println(config.ConnectionDatabase)
 
-	r := router.Gerar()
+	fmt.Println("Running DevBook Backend")
 
-	log.Fatal(http.ListenAndServe(":5000", r))
+	r := router.Generate()
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.Port), r))
 }

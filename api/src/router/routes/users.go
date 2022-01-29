@@ -26,6 +26,12 @@ var usersRoutes = []Routes{
 	},
 	{
 		URI:                      "/users/{id}",
+		Method:                   http.MethodPut,
+		Function:                 controllers.UpdateUser,
+		IsAuthenticationRequired: false,
+	},
+	{
+		URI:                      "/users/{id}",
 		Method:                   http.MethodDelete,
 		Function:                 controllers.RemoveUser,
 		IsAuthenticationRequired: false,
