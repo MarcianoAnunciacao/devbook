@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"errors"
+	"strings"
+	"time"
+)
 
 //Represents an user on the social network devbook
 type User struct {
@@ -10,4 +14,39 @@ type User struct {
 	Email     string    `json:"email,omitempty"`
 	Password  string    `json:"password,omitempty"`
 	CreatedAt time.Time `json:"createdAt,omitempty"`
+}
+
+func (user *User) ValidateInputData() error {
+	if err := user.validateFields(); err != nil {
+		return err
+	}
+
+	user.formatFields()
+	return nil
+}
+
+func (user *User) validateFields() error {
+	if user.Name == "" {
+		return errors.New("Please provide an User Name")
+	}
+
+	if user.NickName == "" {
+		return errors.New("Please provide an User Nick Name")
+	}
+
+	if user.Email == "" {
+		return errors.New("Please provide an User valid E-mail")
+	}
+
+	if user.Password == "" {
+		return errors.New("Please provide an User password")
+	}
+
+	return nil
+}
+
+func (user *User) formatFields() {
+	user.Name = strings.TrimSpace(user.Name)
+	user.NickName = strings.TrimSpace(user.NickName)
+	user.Email = strings.TrimSpace(user.Email)
 }
