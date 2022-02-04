@@ -12,6 +12,7 @@ import (
 var (
 	ConnectionDatabase = ""
 	Port               = 0
+	SecretKey          []byte
 )
 
 //Responsable to initialize environment variables
@@ -32,4 +33,6 @@ func LoadVariables() {
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_NAME"),
 	)
+
+	SecretKey = []byte(os.Getenv("SECRET_KEY"))
 }
