@@ -1,11 +1,13 @@
 package controllers
 
 import (
+	"api/src/authentication"
 	"api/src/database"
 	"api/src/models"
 	"api/src/repositories"
 	"api/src/responses"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -107,6 +109,19 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		responses.Error(w, http.StatusBadRequest, err)
 		return
 	}
+
+	userIdfromToken, err := authentication.ExtractUserIDFromToken(r)
+	if err != nil {
+		responses.Error(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	if userId != userIdfromToken {
+		responses.Error(w, http.StatusForbidden, errors.New("You are not authorized to make changes in this User"))
+		return
+	}
+
+	fmt.Println(userIdfromToken)
 
 	requestBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
