@@ -164,6 +164,19 @@ func RemoveUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userIdfromToken, err := authentication.ExtractUserIDFromToken(r)
+	if err != nil {
+		responses.Error(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	if userId != userIdfromToken {
+		responses.Error(w, http.StatusForbidden, errors.New("You are not authorized to delete this User"))
+		return
+	}
+
+	fmt.Println(userIdfromToken)
+
 	db, err := database.Connect()
 	if err != nil {
 		responses.Error(w, http.StatusInternalServerError, err)
