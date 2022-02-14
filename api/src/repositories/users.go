@@ -247,7 +247,7 @@ func (repository users) SearchUsersFollowedByAnUserID(userID uint64) ([]models.U
 }
 
 func (repository users) SearchPasswordByUserId(userID uint64) (string, error) {
-	line, err := repository.db.Query("select password from users where id = ?")
+	line, err := repository.db.Query("select password from users where id = ?", userID)
 	if err != nil {
 		return "", err
 	}
