@@ -72,7 +72,7 @@ func SearchPublications(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	repository := repositories.PublicationRepository(db)
-	publications, err := repository.SearchPublicationsByUserID(userID)
+	publications, err := repository.SearchPublications(userID)
 	if err != nil {
 		responses.Error(w, http.StatusInternalServerError, err)
 		return
@@ -195,6 +195,76 @@ func DeletePublication(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err = repository.Delete(publicationID); err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusNoContent, nil)
+}
+
+func SearchPublicationsByUserID(w http.ResponseWriter, r *http.Request) {
+	parameters := mux.Vars(r)
+
+	userID, err := strconv.ParseUint(parameters["userID"], 10, 64)
+	if err != nil {
+		responses.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	db, err := database.Connect()
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repository := repositories.PublicationRepository(db)
+	publications, err := repository.SearchPublicationsByUserID(userID)
+
+	responses.JSON(w, http.StatusOK, publications)
+}
+
+func LikeIt(w http.ResponseWriter, r *http.Request) {
+	parameters := mux.Vars(r)
+	publicationID, err := strconv.ParseUint(parameters["id"], 10, 64)
+	if err != nil {
+		responses.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	db, err := database.Connect()
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repository := repositories.PublicationRepository(db)
+	if err = repository.LikeIt(publicationID); err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusNoContent, nil)
+}
+
+func DisLikeIt(w http.ResponseWriter, r *http.Request) {
+	parameters := mux.Vars(r)
+	publicationID, err := strconv.ParseUint(parameters["id"], 10, 64)
+	if err != nil {
+		responses.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	db, err := database.Connect()
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repository := repositories.PublicationRepository(db)
+	if err = repository.DisLikeIt(publicationID); err != nil {
 		responses.Error(w, http.StatusInternalServerError, err)
 		return
 	}

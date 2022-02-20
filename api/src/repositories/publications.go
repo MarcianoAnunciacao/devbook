@@ -66,7 +66,7 @@ func (repository Publications) SearchByID(publicationID uint64) (models.Publicat
 	return publication, nil
 }
 
-func (repository Publications) SearchPublicationsByUserID(userID uint64) ([]models.Publication, error) {
+func (repository Publications) SearchPublications(userID uint64) ([]models.Publication, error) {
 	lines, err := repository.db.Query(`
 		select distinct p.*, u.nick_name 
 		from publications p 
@@ -125,5 +125,73 @@ func (repository Publications) Delete(publicationID uint64) error {
 	if _, err = statement.Exec(publicationID); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (repository Publications) SearchPublicationsByUserID(userID uint64) ([]models.Publication, error) {
+	lines, err := repository.db.Query(`
+		select distinct p.*, u.nick_name 
+		from publications p 
+		inner join users u on u.id = p.author_id 
+		where p.author_id = ?`,
+		userID,
+	)
+	defer lines.Close()
+
+	var publications []models.Publication
+
+	for lines.Next() {
+		var publication models.Publication
+
+		if err = lines.Scan(
+			&publication.ID,
+			&publication.Title,
+			&publication.Content,
+			&publication.AuthorID,
+			&publication.Likes,
+			&publication.CreatedAt,
+			&publication.AuthorNickName,
+		); err != nil {
+			return nil, err
+		}
+
+		publications = append(publications, publication)
+	}
+
+	return publications, nil
+}
+
+func (repository Publications) LikeIt(publicationID uint64) error {
+	statement, err := repository.db.Prepare("update publications set likes = likes + 1 where id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err = statement.Exec(publicationID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repository Publications) DislikeIt(publicationID uint64) error {
+	statement, err := repository.db.Prepare(`
+		update publications set likes = 
+		CASE 
+			WHEN likes > 0 THEN likes - 1
+			ELSE likes 
+		END
+		where id = ?`,
+	)
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err = statement.Exec(publicationID); err != nil {
+		return err
+	}
+
 	return nil
 }
