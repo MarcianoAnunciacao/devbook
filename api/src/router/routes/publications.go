@@ -42,7 +42,7 @@ var publicationsRoutes = []Routes{
 		Function:                 controllers.SearchPublicationsByUserID,
 		IsAuthenticationRequired: true,
 	},
-	{
+	{6
 		URI:                      "/publication/{id}/like",
 		Method:                   http.MethodPost,
 		Function:                 controllers.LikeIt,

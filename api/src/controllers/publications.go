@@ -248,7 +248,7 @@ func LikeIt(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusNoContent, nil)
 }
 
-func DisLikeIt(w http.ResponseWriter, r *http.Request) {
+func DislikeIt(w http.ResponseWriter, r *http.Request) {
 	parameters := mux.Vars(r)
 	publicationID, err := strconv.ParseUint(parameters["id"], 10, 64)
 	if err != nil {
@@ -264,7 +264,7 @@ func DisLikeIt(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	repository := repositories.PublicationRepository(db)
-	if err = repository.DisLikeIt(publicationID); err != nil {
+	if err = repository.DislikeIt(publicationID); err != nil {
 		responses.Error(w, http.StatusInternalServerError, err)
 		return
 	}
