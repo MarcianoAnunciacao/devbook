@@ -3,6 +3,7 @@ USE devbook;
 
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS followers;
+DROP TABLE IF EXISTS publications;
 
 CREATE TABLE users(
     id int auto_increment PRIMARY KEY,
@@ -25,4 +26,18 @@ CREATE TABLE followers(
     ON DELETE CASCADE,
 
     PRIMARY KEY(user_id, follower_id)
+) ENGINE=INNODB;
+
+CREATE TABLE publications(
+    id int auto_increment primary key,
+    title varchar(50) not null,
+    content varchar(300) not null,
+
+    author_id int not null,
+    FOREIGN KEY (author_id)
+    REFERENCES users(id)
+    ON DELETE CASCADE,
+
+    likes int DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=INNODB;

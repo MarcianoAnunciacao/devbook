@@ -183,7 +183,7 @@ func (repository users) UnFollow(userID, followID uint64) error {
 func (repository users) SearchFollowersByUserID(userID uint64) ([]models.User, error) {
 	lines, err := repository.db.Query(`
 		select u.id, u.name, u.nick_name, u.email, u.created_at
-		from users u inner join followers f on s.id = f.follower_id
+		from users u inner join followers f on u.id = f.follower_id
 		where f.user_id = ?`,
 		userID,
 	)
@@ -216,7 +216,7 @@ func (repository users) SearchFollowersByUserID(userID uint64) ([]models.User, e
 func (repository users) SearchUsersFollowedByAnUserID(userID uint64) ([]models.User, error) {
 	lines, err := repository.db.Query(`
 		select u.id, u.name, u.nick_name, u.email, u.created_at
-		from users u inner join followers f on s.follower_id = f.user_id
+		from users u inner join followers f on u.id = f.user_id
 		where f.user_id = ?`,
 		userID,
 	)
@@ -244,4 +244,36 @@ func (repository users) SearchUsersFollowedByAnUserID(userID uint64) ([]models.U
 	}
 
 	return users, nil
+}
+
+func (repository users) SearchPasswordByUserId(userID uint64) (string, error) {
+	line, err := repository.db.Query("select password from users where id = ?", userID)
+	if err != nil {
+		return "", err
+	}
+	defer line.Close()
+
+	var user models.User
+
+	if line.Next() {
+		if err = line.Scan(&user.Password); err != nil {
+			return "", err
+		}
+	}
+
+	return user.Password, nil
+}
+
+func (repository users) UpdatePassword(userID uint64, password string) error {
+	statement, err := repository.db.Prepare("update users set password = ? where id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err = statement.Exec(password, userID); err != nil {
+		return err
+	}
+
+	return nil
 }

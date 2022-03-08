@@ -51,13 +51,19 @@ var usersRoutes = []Routes{
 	{
 		URI:                      "users/{id}/followers",
 		Method:                   http.MethodGet,
-		Function:                 controllers.SearchFollowers,
+		Function:                 controllers.SearchFollowersByUserID,
 		IsAuthenticationRequired: true,
 	},
 	{
 		URI:                      "users/{id}/following",
 		Method:                   http.MethodGet,
 		Function:                 controllers.SearchUsersFollowedByAnUserID,
+		IsAuthenticationRequired: true,
+	},
+	{
+		URI:                      "users/{id}/update-password",
+		Method:                   http.MethodPost,
+		Function:                 controllers.UpdatePassword,
 		IsAuthenticationRequired: true,
 	},
 }
