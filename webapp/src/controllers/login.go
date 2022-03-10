@@ -6,17 +6,16 @@ import (
 	"fmt"
 	"net/http"
 	"webapp/src/config"
+	"webapp/src/models"
 	"webapp/src/responses"
 )
 
-func CreateUser(w http.ResponseWriter, r *http.Request) {
+func SignupWithEmailAndPasswordToGetToken(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
 	user, err := json.Marshal(map[string]string{
-		"name":     r.FormValue("name"),
 		"email":    r.FormValue("email"),
-		"nick":     r.FormValue("nick"),
-		"password": r.FormValue("password"),
+		"password": r.FormValue("email"),
 	})
 
 	if err != nil {
@@ -24,7 +23,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	url := fmt.Sprintf("%s/users", config.ApiUrl)
+	url := fmt.Sprintf("%s/login", config.ApiUrl)
 	response, err := http.Post(url, "application/json", bytes.NewBuffer(user))
 	if err != nil {
 		responses.JSON(w, http.StatusInternalServerError, responses.ErrorAPI{Error: err.Error()})
@@ -34,8 +33,12 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	if response.StatusCode >= 400 {
 		responses.FormatStatusCodeErrors(w, response)
+	}
+
+	var authData models.AuthData
+	if err = json.NewDecoder(response.Body).Decode(&authData); err != nil {
+		responses.JSON(w, http.StatusUnprocessableEntity, responses.ErrorAPI{Error: err.Error()})
 		return
 	}
 
-	responses.JSON(w, response.StatusCode, nil)
 }
