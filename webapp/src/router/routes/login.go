@@ -21,7 +21,7 @@ var loginRoutes = []Route{
 	{
 		URI:                      "/login",
 		Method:                   http.MethodPost,
-		Function:                 controllers.SignupWithEmailAndPasswordToGetToken,
+		Function:                 controllers.SignupWithEmailAndPasswordToAGetToken,
 		IsAuthenticationRequired: false,
 	},
 }

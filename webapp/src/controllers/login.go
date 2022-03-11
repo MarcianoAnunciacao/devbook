@@ -6,11 +6,12 @@ import (
 	"fmt"
 	"net/http"
 	"webapp/src/config"
+	"webapp/src/cookies"
 	"webapp/src/models"
 	"webapp/src/responses"
 )
 
-func SignupWithEmailAndPasswordToGetToken(w http.ResponseWriter, r *http.Request) {
+func SignupWithEmailAndPasswordToAGetToken(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
 	user, err := json.Marshal(map[string]string{
@@ -41,4 +42,10 @@ func SignupWithEmailAndPasswordToGetToken(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	if err = cookies.SaveCookie(w, authData.ID, authData.Token); err != nil {
+		responses.JSON(w, http.StatusUnprocessableEntity, responses.ErrorAPI{Error: err.Error()})
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, nil)
 }

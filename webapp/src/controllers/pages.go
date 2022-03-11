@@ -12,3 +12,7 @@ func LoadLoginPage(w http.ResponseWriter, r *http.Request) {
 func LoadCreateUserPage(w http.ResponseWriter, r *http.Request) {
 	utils.RenderTemplate(w, "userregistration.html", nil)
 }
+
+func LoadMainPage(w http.ResponseWriter, r *http.Request) {
+	utils.RenderTemplate(w, "home.html", nil)
+}
