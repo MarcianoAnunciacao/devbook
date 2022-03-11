@@ -6,17 +6,17 @@ import (
 	"fmt"
 	"net/http"
 	"webapp/src/config"
-	"webapp/src/cookies"
-	"webapp/src/models"
 	"webapp/src/responses"
 )
 
-func SignupWithEmailAndPasswordToAGetToken(w http.ResponseWriter, r *http.Request) {
+func CreateUser(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
 	user, err := json.Marshal(map[string]string{
+		"name":     r.FormValue("name"),
 		"email":    r.FormValue("email"),
-		"password": r.FormValue("email"),
+		"nick":     r.FormValue("nick"),
+		"password": r.FormValue("password"),
 	})
 
 	if err != nil {
@@ -24,7 +24,7 @@ func SignupWithEmailAndPasswordToAGetToken(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	url := fmt.Sprintf("%s/login", config.ApiUrl)
+	url := fmt.Sprintf("%s/users", config.ApiUrl)
 	response, err := http.Post(url, "application/json", bytes.NewBuffer(user))
 	if err != nil {
 		responses.JSON(w, http.StatusInternalServerError, responses.ErrorAPI{Error: err.Error()})
@@ -34,18 +34,8 @@ func SignupWithEmailAndPasswordToAGetToken(w http.ResponseWriter, r *http.Reques
 
 	if response.StatusCode >= 400 {
 		responses.FormatStatusCodeErrors(w, response)
-	}
-
-	var authData models.AuthData
-	if err = json.NewDecoder(response.Body).Decode(&authData); err != nil {
-		responses.JSON(w, http.StatusUnprocessableEntity, responses.ErrorAPI{Error: err.Error()})
 		return
 	}
 
-	if err = cookies.SaveCookie(w, authData.ID, authData.Token); err != nil {
-		responses.JSON(w, http.StatusUnprocessableEntity, responses.ErrorAPI{Error: err.Error()})
-		return
-	}
-
-	responses.JSON(w, http.StatusOK, nil)
+	responses.JSON(w, response.StatusCode, nil)
 }
