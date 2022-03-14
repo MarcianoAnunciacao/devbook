@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"webapp/src/config"
+	"webapp/src/cookies"
 	"webapp/src/models"
 	"webapp/src/requests"
 	"webapp/src/responses"
@@ -38,7 +40,15 @@ func LoadMainPage(w http.ResponseWriter, r *http.Request) {
 		responses.JSON(w, http.StatusUnprocessableEntity, responses.ErrorAPI{Error: err.Error()})
 		return
 	}
-	fmt.Println(response.StatusCode, err)
 
-	utils.RenderTemplate(w, "home.html", publications)
+	cookie, _ := cookies.ReadCookie(r)
+	userID, _ := strconv.ParseUint(cookie["id"], 10, 64)
+
+	utils.RenderTemplate(w, "home.html", struct {
+		Publications []models.Publication
+		UserID       uint64
+	}{
+		Publications: publications,
+		UserID:       userID,
+	})
 }

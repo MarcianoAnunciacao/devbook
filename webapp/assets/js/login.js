@@ -1,4 +1,4 @@
-$('#login').on('submit', fazerLogin);
+$('#login').on('submit', signIn);
 
 function signIn(event) {
     event.preventDefault();
