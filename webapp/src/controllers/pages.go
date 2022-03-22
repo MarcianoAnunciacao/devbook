@@ -11,6 +11,8 @@ import (
 	"webapp/src/requests"
 	"webapp/src/responses"
 	"webapp/src/utils"
+
+	"github.com/gorilla/mux"
 )
 
 func LoadLoginPage(w http.ResponseWriter, r *http.Request) {
@@ -51,4 +53,33 @@ func LoadMainPage(w http.ResponseWriter, r *http.Request) {
 		Publications: publications,
 		UserID:       userID,
 	})
+}
+
+func LoadPublicationEditionPage(w http.ResponseWriter, r *http.Request) {
+	parameters := mux.Vars(r)
+	publicationID, err := strconv.ParseUint(parameters["publicationId"], 10, 64)
+	if err != nil {
+		responses.JSON(w, http.StatusBadRequest, responses.ErrorAPI{Error: err.Error()})
+		return
+	}
+
+	url := fmt.Sprintf("%s/publications/%d", config.ApiUrl, publicationID)
+	response, err := requests.MakeARequestWithAuthentication(r, http.MethodGet, url, nil)
+	if err != nil {
+		responses.JSON(w, http.StatusInternalServerError, responses.ErrorAPI{Error: err.Error()})
+		return
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode >= 400 {
+		responses.FormatStatusCodeErrors(w, response)
+		return
+	}
+
+	var publication models.Publication
+	if err = json.NewDecoder(response.Body).Decode(&publication); err != nil {
+		responses.JSON(w, http.StatusUnprocessableEntity, responses.ErrorAPI{Error: err.Error()})
+	}
+
+	utils.RenderTemplate(w, "update-publication.html", publication)
 }

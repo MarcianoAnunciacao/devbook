@@ -1,7 +1,7 @@
 $('#new-publication').on('submit', createPublication);
 
 $(document).on('click', '.like', like);
-$(document).on('click', '.deslike', deslike);
+$(document).on('click', '.deslike', dislike);
 
 $('#update-publication').on('click', updatePublication);
 $('.delete-publication').on('click', deletePublication);
@@ -27,7 +27,7 @@ function like(event) {
     event.preventDefault();
 
     const clickedElement = $(event.target);
-    const publicationId = elementoClicado.closest('div').data('publicacao-id');
+    const publicationId = clickedElement.closest('div').data('publication-id');
 
     clickedElement.prop('disabled', true);
     $.ajax({
@@ -46,15 +46,15 @@ function like(event) {
     }).fail(function() {
         Swal.fire("Ops...", "Error trying to like publication!", "error");
     }).always(function() {
-        elementoClicado.prop('disabled', false);
+        clickedElement.prop('disabled', false);
     });
 }
 
-function deslike(event) {
+function dislike(event) {
     evento.preventDefault();
 
     const clickedElement = $(event.target);
-    const publicationId = clickedElement.closest('div').data('publicacao-id');
+    const publicationId = clickedElement.closest('div').data('publication-id');
 
     clickedElement.prop('disabled', true);
     $.ajax({
@@ -66,7 +66,7 @@ function deslike(event) {
 
         likesCounter.text(likesAmout - 1);
 
-        clickedElement.removeClass('descurtir-publicacao');
+        clickedElement.removeClass('dislike-publication');
         clickedElement.removeClass('text-danger');
         clickedElement.addClass('like-publication');
 
