@@ -106,7 +106,7 @@ function deletePublication(event) {
 
     Swal.fire({
         title: "Attention!",
-        text: "This action cannot be undone, do you sure?",
+        text: "This action cannot be undone, are you sure?",
         showCancelButton: true,
         cancelButtonText: "Cancel",
         icon: "warning"

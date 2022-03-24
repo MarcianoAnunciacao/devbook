@@ -26,8 +26,20 @@ var publicationRoutes = []Route{
 	},
 	{
 		URI:                      "/publications/{publicationId}/edit",
-		Method:                   http.MethodPost,
-		Function:                 controllers.DislikePublication,
+		Method:                   http.MethodGet,
+		Function:                 controllers.LoadPublicationEditionPage,
+		IsAuthenticationRequired: true,
+	},
+	{
+		URI:                      "/publications/{publicationId}",
+		Method:                   http.MethodPut,
+		Function:                 controllers.UpdatePublication,
+		IsAuthenticationRequired: true,
+	},
+	{
+		URI:                      "/publications/{publicationId}",
+		Method:                   http.MethodDelete,
+		Function:                 controllers.DeletePublication,
 		IsAuthenticationRequired: true,
 	},
 }
