@@ -90,7 +90,7 @@ function updatePublication() {
             conteudo: $('#content').val()
         }
     }).done(function() {
-        Swal.fire('Succsses!', 'Publications has been updated!', 'success')
+        Swal.fire('Success!', 'Publications has been updated!', 'success')
             .then(function() {
                 window.location = "/home";
             })
@@ -130,5 +130,4 @@ function deletePublication(event) {
             Swal.fire("Ops...", "Error deleting publication!", "error");
         });
     })
-
 }
