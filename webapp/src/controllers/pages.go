@@ -16,6 +16,12 @@ import (
 )
 
 func LoadLoginPage(w http.ResponseWriter, r *http.Request) {
+	cookie, _ := cookies.ReadCookie(r)
+
+	if cookie["token"] != "" {
+		http.Redirect(w, r, "/home", http.StatusFound)
+	}
+
 	utils.RenderTemplate(w, "login.html", nil)
 }
 
@@ -82,4 +88,15 @@ func LoadPublicationEditionPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.RenderTemplate(w, "update-publication.html", publication)
+}
+
+func LoadUserProfile(w http.ResponseWriter, r *http.Request) {
+	parameters := mux.Vars(r)
+	userID, err := strconv.ParseUint(parameters["userId"], 10, 64)
+	if err != nil {
+		responses.JSON(w, http.StatusBadRequest, responses.ErrorAPI{Error: err.Error()})
+		return
+	}
+
+	user, err := models.SearchUserWithAllInformations(userID, r)
 }
