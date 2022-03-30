@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"webapp/src/config"
@@ -14,7 +15,8 @@ type User struct {
 	Email        string        `json:"email"`
 	Nick         string        `json:"nick"`
 	CreatedAt    string        `json:"createdAt"`
-	Followers    []User        `json:"following"`
+	Followers    []User        `json:"followers"`
+	Following    []User        `json:"following"`
 	Publications []Publication `json:"publications"`
 }
 
@@ -29,7 +31,47 @@ func SearchUserWithAllInformations(userID uint64, r *http.Request) (User, error)
 	go SearchFollowing(followingChannel, userID, r)
 	go SearchPublications(publicationsChannel, userID, r)
 
-	return User{}, nil
+	var (
+		user         User
+		followers    []User
+		following    []User
+		publications []Publication
+	)
+
+	for i := 0; i < 4; i++ {
+		select {
+		case loadedUser := <-userChannel:
+			if loadedUser.ID == 0 {
+				return User{}, errors.New("Error searching for User")
+			}
+
+			user = loadedUser
+		case loadedFollowers := <-followersChannel:
+			if loadedFollowers == nil {
+				return User{}, errors.New("Error searching for Followers")
+			}
+
+			followers = loadedFollowers
+		case loadedFollowing := <-followingChannel:
+			if loadedFollowing == nil {
+				return User{}, errors.New("Error searching for Users following")
+			}
+
+			following = loadedFollowing
+		case loadedPublications := <-publicationsChannel:
+			if loadedPublications == nil {
+				return User{}, errors.New("Error searching for Users publications")
+			}
+
+			publications = loadedPublications
+		}
+	}
+
+	user.Followers = followers
+	user.Following = following
+	user.Publications = publications
+
+	return user, nil
 }
 
 func SearchUserData(channel chan<- User, userID uint64, r *http.Request) {
