@@ -1,104 +1,104 @@
-$('#parar-de-seguir').on('click', pararDeSeguir);
-$('#seguir').on('click', seguir);
-$('#editar-usuario').on('submit', editar);
-$('#atualizar-senha').on('submit', atualizarSenha);
-$('#deletar-usuario').on('click', deletarUsuario);
+$('#stop-following').on('click', stopFollowing);
+$('#follow').on('click', follow);
+$('#edit-user').on('submit', edit);
+$('#update-password').on('submit', updatePassword);
+$('#delete-user').on('click', deleteUser);
 
-function pararDeSeguir() {
-    const usuarioId = $(this).data('usuario-id');
+function stopFollowing() {
+    const userId = $(this).data('user-id');
     $(this).prop('disabled', true);
 
     $.ajax({
-        url: `/usuarios/${usuarioId}/parar-de-seguir`,
+        url: `/users/${userId}/stop-following`,
         method: "POST"
     }).done(function() {
-        window.location = `/usuarios/${usuarioId}`;
+        window.location = `/users/${userId}`;
     }).fail(function() {
-        Swal.fire("Ops...", "Erro ao parar de seguir o usuário!", "error");
-        $('#parar-de-seguir').prop('disabled', false);
+        Swal.fire("Ops...", "Error when trying to stop following user!", "error");
+        $('#stop-following').prop('disabled', false);
     });
 }
 
-function seguir() {
-    const usuarioId = $(this).data('usuario-id');
+function follow() {
+    const userId = $(this).data('user-id');
     $(this).prop('disabled', true);
 
     $.ajax({
-        url: `/usuarios/${usuarioId}/seguir`,
+        url: `/users/${userId}/follow`,
         method: "POST"
     }).done(function() {
-        window.location = `/usuarios/${usuarioId}`;
+        window.location = `/users/${userId}`;
     }).fail(function() {
-        Swal.fire("Ops...", "Erro ao seguir o usuário!", "error");
-        $('#seguir').prop('disabled', false);
+        Swal.fire("Ops...", "Error following user!", "error");
+        $('#follow').prop('disabled', false);
     });
 }
 
-function editar(evento) {
-    evento.preventDefault();
+function edit(event) {
+    event.preventDefault();
 
     $.ajax({
-        url: "/editar-usuario",
+        url: "/edit-user",
         method: "PUT",
         data: {
-            nome: $('#nome').val(),
+            name: $('#name').val(),
             email: $('#email').val(),
             nick: $('#nick').val(),
         }
     }).done(function() {
-        Swal.fire("Sucesso!", "Usuário atualizado com sucesso!", "success")
+        Swal.fire("Success!", "User's informations updated!", "success")
             .then(function() {
-                window.location = "/perfil";
+                window.location = "/profile";
             });
     }).fail(function() {
-        Swal.fire("Ops...", "Erro ao atualizar o usuário!", "error");
+        Swal.fire("Ops...", "Error updating user!", "error");
     });
 }
 
-function atualizarSenha(evento) {
-    evento.preventDefault();
+function updatePassword(event) {
+    event.preventDefault();
 
-    if ($('#nova-senha').val() != $('#confirmar-senha').val()) {
-        Swal.fire("Ops...", "As senhas não coincidem!", "warning");
+    if ($('#new-password').val() != $('#confirm-password').val()) {
+        Swal.fire("Ops...", "Passwords do not match!", "warning");
         return;
     }
 
     $.ajax({
-        url: "/atualizar-senha",
+        url: "/update-password",
         method: "POST",
         data: {
-            atual: $('#senha-atual').val(),
-            nova: $('#nova-senha').val()
+            current: $('#current-password').val(),
+            new: $('#new-password').val()
         }
     }).done(function() {
-        Swal.fire("Sucesso!", "A senha foi atualizada com sucesso!", "success")
+        Swal.fire("Success!", "Password has been updated!", "success")
             .then(function() {
-                window.location = "/perfil";
+                window.location = "/profile";
             })
     }).fail(function() {
-        Swal.fire("Ops...", "Erro ao atualizar a senha!", "error");
+        Swal.fire("Ops...", "Error updating password!", "error");
     });
 }
 
-function deletarUsuario() {
+function deleteUser() {
     Swal.fire({
-        title: "Atenção!",
-        text: "Tem certeza que deseja apagar a sua conta? Essa é uma ação irreversível!",
+        title: "Attention!",
+        text: "This action cannot be undone, are you sure?",
         showCancelButton: true,
-        cancelButtonText: "Cancelar",
+        cancelButtonText: "Cancel",
         icon: "warning"
-    }).then(function(confirmacao) {
-        if (confirmacao.value) {
+    }).then(function(confirm) {
+        if (confirm.value) {
             $.ajax({
-                url: "/deletar-usuario",
+                url: "/delete-user",
                 method: "DELETE"
             }).done(function() {
-                Swal.fire("Sucesso!", "Seu usuário foi excluído com sucesso!", "success")
+                Swal.fire("Success!", "User deleted!", "success")
                     .then(function() {
                         window.location = "/logout";
                     })
             }).fail(function() {
-                Swal.fire("Ops...", "Ocorreu um erro ao excluir o seu usuário!", "error");
+                Swal.fire("Ops...", "Error deleting user!", "error");
             });
         }
     })
