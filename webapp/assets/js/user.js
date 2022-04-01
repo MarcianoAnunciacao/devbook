@@ -46,7 +46,7 @@ function edit(event) {
             nick: $('#nick').val(),
         }
     }).done(function() {
-        Swal.fire("Success!", "User informations updated!", "success")
+        Swal.fire("Success!", "User's informations updated!", "success")
             .then(function() {
                 window.location = "/profile";
             });
@@ -67,11 +67,11 @@ function updatePassword(event) {
         url: "/update-password",
         method: "POST",
         data: {
-            atual: $('#current-password').val(),
-            nova: $('#new-password').val()
+            current: $('#current-password').val(),
+            new: $('#new-password').val()
         }
     }).done(function() {
-        Swal.fire("Sucesso!", "Password has been updated!", "success")
+        Swal.fire("Success!", "Password has been updated!", "success")
             .then(function() {
                 window.location = "/profile";
             })
